@@ -38,7 +38,7 @@ int main(){
 	cout <<"There's nothing in the tree." << endl;
       }
     }
-    if (0==strcmp(command, "search"){
+    if (0==strcmp(command, "search")){
 	if (head){
 	  int number;
 	  cout << "What number do you want to search?" << endl;
@@ -90,15 +90,67 @@ void printTree(Node* head, int indent){
        parent = head;
        return search(head->getLeft(), number, parent, right);
      }
+     else return NULL;
    }
    if (number > head->getData()){
      if (head->getRight()){
        right = true;
-       
+       parent = head;
+       return search(head->getRight(), number, parent, right);
      }
+     else return NULL;
    }
+   else return head;
 }
 
-bool deleteNode(){
+bool deleteNode(Node* &head, int number){//dont actually delete it though; need to delete head scenario
+   Node* parent;
+   bool right;
+   Node* deleted;
+   Node* swap;
+   deleted = search(head, number, parent, right);
+   if (!deleted){
+     return false;
+   }
+   if(deleted->getLeft() == NULL && deleted->getRight() != NULL){
+     swap = deleted->getRight();
+     if (right == true){
+       parent->setRight(swap);
+     }
+     if (right == false){
+       parent->setLeft(swap);
+     }
+   }
+   if(deleted->getLeft()!= NULL && deleted->getRight() == NULL){
+     swap = deleted->getLeft();
+     if(right==true){
+       parent->setRight(swap);
+     }
+     if (right==false){
+       parent->setLeft(swap);
+     }
+   }
+   if(deleted->getLeft() != NULL && deleted->getRight()!= NULL){
 
+   }
+   if (deleted->getLeft() == NULL && deleted->getRight() == NULL){
+     swap = NULL;
+     if (right == true){
+       parent->setRight(swap);
+       }
+     if (right ==false){
+       parent->setLeft(swap);
+     }
+   } 
+   /*else if (!deleted->getLeft()){
+     swap = deleted->getRight();
+   }
+   else if (!deleted->getRight()){
+     swap = deleted->getLeft();
+   }
+   else if (deleted->getLeft()->getRight()){
+     Node* current = deleted->getLeft();
+     
+
+     }*/
 }
