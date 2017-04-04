@@ -3,14 +3,17 @@
 #include <cstring>
 #include <iostream>
 #include "Node.h"
+#include <fstream>
 
 using namespace std;
 
 //methods that i use
-void addNode(Node* head, int number);
+void addNode(Node* head, int number, Node* &thead);
 void printTree (Node* head, int indent =0);
 Node* search(Node* head, int number, Node* &parent, bool &right);
 bool deleteNode(Node* &head, int number);
+void checkInput(ifstream &stream, bool &isFile);//checks if the input is file or input
+void addNumbers(istream &from, Node* &head);
 
 int main(){
   Node* head = NULL;//set the head to null
@@ -19,9 +22,15 @@ int main(){
   while (running == true){//while the user wants to play
     cout << "Enter a command: add, search, print, delete, or quit." << endl;
     cin.get(command, 32);
-    cin.ignore(); 
+    cin.ignore();
     if (0==strcmp(command, "add")){//if user types in command, add
-      if (head == NULL){//if first number in the tree is added
+      ifstream stream;//create the variable
+      bool isFile;
+      checkInput(stream, isFile);//run checkInput
+      addNumbers(isFile ? stream: cin, head);//run add to heap
+      if (isFile) stream.close();//if its a file, do this
+      cin.ignore();
+      /* if (head == NULL){//if first number in the tree is added
 	int number;
 	cout << "What number?" << endl;
 	cin >> number;
@@ -34,7 +43,7 @@ int main(){
 	cin >> number;
 	cin.ignore();
 	addNode(head, number);//run addNode
-      }
+	}*/
     }
     if (0==strcmp(command, "print")){//if user types print
       if (head){//if head is not null
@@ -74,10 +83,10 @@ int main(){
 	cin >> number;
 	cin.ignore();
 	if(deleteNode(head, number)){//if its in the tree; its deleted
-	  cout << "The number: " << number << "is deleted." << endl;
+	  cout << "The number: " << number << " is deleted." << endl;
 	}
 	else{//not found in the tree and not deleted
-	  cout << "The number: " << number << "is not in the tree." << endl;
+	  cout << "The number: " << number << " is not in the tree." << endl;
 	}
       }
       else{//nothings in tree
@@ -87,18 +96,59 @@ int main(){
   }
 }
 
-void addNode(Node* head, int number){//method for adding nodes using recursion
-  if (number < head->getData()){//if the number inputted is smaller than the heads data; go left
+void checkInput(ifstream &stream, bool &isFile){ //checks if the input is file or input
+  char input[128];
+  isFile = false;
+  cout << "Do you want to read from a file or input your own text?(file or input)" << endl;//check how it will be inputted
+  cin.getline(input,128);
+  if (0== strcmp(input, "file")){//if file and input are equal
+    char name[128];
+    cout << "What file?" << endl;
+    cin.getline(name, 128);//get the name of the file
+    stream.open(name);//try to open it
+    if(stream.is_open()){//if it opends, there is a file
+      isFile = true;
+      cout << "Thanks. Enter a command above." << endl;
+    }
+    else {
+      cout << "The file could not be opened" << endl;
+    }
+  }
+  if (0==strcmp(input, "input")){
+    cout << "Enter the numbers please." << endl;
+  }
+}
+
+void addNumbers(istream &from, Node* &head){//adds numbers to the input and then puts into nodes
+  int newInput;
+  from >> newInput;//take in number
+  addNode(head,newInput,head);//add it to the node
+  while(from.peek() != '\n' && !from.eof()){
+    if(isdigit(from.peek())){//
+      from >> newInput;
+      addNode(head,newInput,head);//add to node
+    }
+    else{
+      from.ignore();
+    }
+  }
+}
+
+void addNode(Node* head, int number, Node* &thead){//method for adding nodes using recursion
+  if (thead == NULL){
+    thead = new Node(number);
+  }
+  else if (number < head->getData()){//if the number inputted is smaller than the heads data; go left
     if (head->getLeft()){//keep going left until its null
-      addNode(head->getLeft(), number);
+      addNode(head->getLeft(), number, thead);
     }
     else{//once it reaches end of tree, set the left node to new node
       head->setLeft(new Node(number));
     }
   }
-  if (number > head->getData()){//if the number is larger than heads data
+  else if (number > head->getData()){//if the number is larger than heads data
     if (head->getRight()){//go right until null
-      addNode(head->getRight(), number);
+      addNode(head->getRight(), number, thead);
     }
     else{//set the right node to new node
       head->setRight(new Node(number));
@@ -194,6 +244,8 @@ bool deleteNode(Node* &head, int number){//deleting a node
        if (move != deleted->getLeft()){//unusual scenario
 	 move->setLeft(deleted->getLeft());//set left to deleted 
 	 old->setRight(NULL);//set right to null
+	 // setting = deleted->getRight();
+	 // setting->setLeft(old->getLeft());
      }
    }
        /*

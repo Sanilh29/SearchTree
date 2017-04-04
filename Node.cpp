@@ -7,6 +7,8 @@ using namespace std;
 
 Node::Node(int newdata){//creates the node; constructore
   data = newdata;
+  left = NULL;
+  right = NULL;
 }
 
 Node::Node(){//other default constructor
