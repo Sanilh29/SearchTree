@@ -224,8 +224,8 @@ bool deleteNode(Node* &head, int number){//deleting a node
      }
    }
    if(deleted->getLeft() != NULL && deleted->getRight()!= NULL){ //if it has 2 children
-     Node* old;
-     Node* newn;
+     Node* old=NULL;
+     Node* newn = NULL;
      Node* move = deleted->getLeft();//set a node to go left of deleted
      while (move->getRight() != NULL){//then go all the way right
        old = move;//set old to move
@@ -234,7 +234,7 @@ bool deleteNode(Node* &head, int number){//deleting a node
      }
      if (head == deleted){//if its head
        head = move;//swap head and move
-       cout << head->getData() << endl;
+       // cout << head->getData() << endl;
      }
      else if (right == true){//if its deleted is right
        parent->setRight(move);//set move to be right
@@ -243,14 +243,10 @@ bool deleteNode(Node* &head, int number){//deleting a node
        parent->setLeft(move);//set left 
      }
      move->setRight(deleted->getRight());//set moves right to be deleted
-       if (move != deleted->getLeft()){//unusual scenario
-	 move->setLeft(deleted->getLeft());//set left to deleted 
-	 old->setRight(NULL);//set right to null
-       }
-       /* else {
-	 move->setRight(deleted->geRight());
-	 old->setRight(NULL);
-       }*/
+     if (move != deleted->getLeft()){//unusual scenario
+       old->setRight(move->getLeft());
+       move->setLeft(deleted->getLeft());
+     }
    }
        /*
 
